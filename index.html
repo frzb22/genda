@@ -839,9 +839,10 @@ function showView(v) {
   window.scrollTo(0,0);
 }
 function renderCurrentView() {
-  if (currentView==="home") // Apply saved language
-renderNavLinks();
-renderHome();
+  if (currentView === "home") {
+    renderNavLinks();
+    renderHome();
+  }
   else if (currentView==="booking") renderBooking();
   else if (currentView==="myturns") renderMyTurns();
   else if (currentView==="beneficios") renderBeneficios();
@@ -2091,7 +2092,7 @@ renderHome();
 
     // Session restore
     firebase.auth().onAuthStateChanged(async (u) => {
-      dbg('AuthState: ' + (u ? u.email : 'null'));
+
       if (u) {
         const isAdmin = u.email === "diaz.mareugenia@gmail.com" || u.email === "gdannetti@gmail.com";
         const initials = u.displayName.split(" ").map(n=>n[0]).join("").substring(0,2).toUpperCase();
