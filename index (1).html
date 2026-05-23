@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EUGE DÍAZ STUDIO · GENDA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --gold: #C9A96E; --gold-dark: #a8854d;
+  --bg: #0e0c0a; --card: rgba(255,255,255,0.03);
+  --border: rgba(201,169,110,0.15); --text: #f0ece4;
+  --muted: rgba(240,236,228,0.45);
+  --display: 'Cormorant Garamond', serif; --body: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--body); min-height: 100vh; }
+a { text-decoration: none; }
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,12,10,0.93); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; height: 60px; gap: 8px;
+}
+.logo { font-family: var(--display); font-size: 15px; letter-spacing: 3px; color: var(--gold); font-weight: 400; white-space: nowrap; display:flex; align-items:center; gap:8px; }
+.nav-links { display: flex; gap: 2px; flex-wrap: wrap; }
+.nav-btn { background: transparent; border: none; color: var(--muted); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; letter-spacing: 0.8px; font-family: var(--body); font-weight: 500; transition: all 0.2s; white-space: nowrap; }
+.nav-btn:hover, .nav-btn.active { background: rgba(201,169,110,0.1); color: var(--gold); }
+.view { display: none; padding: 24px 16px 60px; max-width: 680px; margin: 0 auto; }
+.view.active { display: block; }
+.hero { text-align: center; padding: 50px 16px 40px; max-width: 600px; margin: 0 auto; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.section-title { font-family: var(--display); font-size: 22px; letter-spacing: 4px; font-weight: 300; color: var(--gold); margin-bottom: 20px; }
+.gold-btn { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--bg); border: none; border-radius: 10px; padding: 12px 28px; font-size: 13px; letter-spacing: 1px; font-weight: 700; cursor: pointer; font-family: var(--body); transition: all 0.2s; box-shadow: 0 4px 16px rgba(201,169,110,0.25); }
+.gold-btn:disabled { opacity: 0.4; cursor: default; }
+.ghost-btn { background: transparent; color: var(--muted); border: 1px solid rgba(240,236,228,0.15); border-radius: 10px; padding: 10px 20px; font-size: 12px; cursor: pointer; font-family: var(--body); transition: all 0.2s; }
+.input-field { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,169,110,0.2); border-radius: 10px; padding: 12px 16px; color: var(--text); font-size: 14px; font-family: var(--body); outline: none; transition: border 0.2s; }
+.input-field:focus { border-color: rgba(201,169,110,0.45); }
+.input-field::placeholder { color: rgba(240,236,228,0.25); }
+.label { font-size: 11px; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 6px; }
+.services-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 10px; }
+.service-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+.service-item:hover { border-color: rgba(201,169,110,0.35); }
+.service-item.selected { border-color: var(--gold); background: rgba(201,169,110,0.07); }
+.pro-item { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; cursor: pointer; transition: all 0.2s; margin-bottom:10px; }
+.pro-item.selected { border-color: var(--gold); background: rgba(201,169,110,0.06); }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+.cal-day { background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text); cursor: pointer; padding: 8px 2px; font-size: 12px; font-family: var(--body); text-align: center; transition: all 0.15s; }
+.cal-day.selected { background: linear-gradient(135deg,var(--gold),var(--gold-dark)); color: var(--bg); font-weight: 700; }
+.cal-day:disabled { color: rgba(240,236,228,0.15); cursor: default; }
+.time-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.time-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--text); cursor: pointer; padding: 10px 4px; font-size: 12px; font-family: var(--body); text-align: center; transition: all 0.15s; }
+.time-btn.selected { background: linear-gradient(135deg,var(--gold),var(--gold-dark)); color: var(--bg); font-weight: 700; border-color: transparent; }
+.time-btn.blocked { background: rgba(244,67,54,0.08); color: rgba(240,236,228,0.2); cursor: default; }
+.time-btn.taken { color: rgba(240,236,228,0.2); cursor: default; }
+.steps-bar { display: flex; align-items: center; margin-bottom: 28px; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; transition: all 0.3s; border: 1.5px solid transparent; }
+.step-dot.active { background: rgba(201,169,110,0.18); color: var(--gold); border-color: var(--gold); }
+.step-dot.done { background: var(--gold); color: var(--bg); }
+.step-dot.pending { background: rgba(255,255,255,0.05); color: rgba(240,236,228,0.25); }
+.step-line { flex: 1; height: 1px; margin: 0 3px; margin-bottom: 14px; }
+.loyalty-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.3); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--gold); }
+.google-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px 20px; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; cursor: pointer; font-size: 14px; font-family: var(--body); color: #333; font-weight: 600; transition: all 0.2s; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,0.35); z-index: 9999; display: flex; align-items: center; gap: 10px; max-width: 340px; animation: slideUp 0.3s ease; pointer-events: none; }
+@keyframes slideUp { from { opacity:0; transform:translateX(-50%) translateY(14px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal { background: #141210; border: 1px solid rgba(201,169,110,0.22); border-radius: 20px; padding: 32px; width: 100%; max-width: 360px; }
+.summary { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; margin-top: 18px; }
+.appt-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 16px 14px 20px; margin-bottom: 12px; position: relative; overflow: hidden; }
+.reminder-chip { padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-family: var(--body); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--muted); transition: all 0.2s; display: inline-block; margin: 3px; }
+.reminder-chip.on { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.35); color: #25D366; }
+.toggle-track { width: 44px; height: 24px; border-radius: 12px; cursor: pointer; background: rgba(255,255,255,0.1); position: relative; transition: background 0.3s; flex-shrink:0; }
+.toggle-track.on { background: linear-gradient(135deg,#25D366,#128C7E); }
+.toggle-thumb { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left 0.3s; }
+.toggle-track.on .toggle-thumb { left: 22px; }
+.block-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: rgba(240,236,228,0.7); padding: 9px 4px; font-size: 12px; cursor: pointer; font-family: var(--body); text-align: center; transition: all 0.15s; }
+.block-btn.blocked { background: rgba(244,67,54,0.18); border-color: rgba(244,67,54,0.4); color: #f44336; }
+::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.3); border-radius: 2px; }
+@media (max-width:500px) { .nav-links { display:none; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div id="navLogo" style="display:none;width:36px;height:36px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(201,169,110,0.4);flex-shrink:0">
+      <img id="navLogoImg" src="" style="width:100%;height:100%;object-fit:cover"/>
+    </div>
+    <span id="navStudioName">EUGE DÍAZ STUDIO</span>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <button class="nav-btn active" onclick="showView('home')">INICIO</button>
+    <button class="nav-btn" onclick="showView('booking')">RESERVAR</button>
+    <button class="nav-btn" onclick="showView('myturns')">MIS TURNOS</button>
+    <button class="nav-btn" onclick="showView('beneficios')">BENEFICIOS ★</button>
+    <button class="nav-btn" id="agendaNavBtn" style="display:none" onclick="showView('agenda')">AGENDA</button>
+    <button class="nav-btn" id="localNavBtn" style="display:none" onclick="showView('local')">MI LOCAL</button>
+    <button class="nav-btn" id="statsNavBtn" style="display:none" onclick="showView('stats')">📊</button>
+    <button class="nav-btn" onclick="showView('reviews')">★ RESEÑAS</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <button onclick="setLang('es')" id="langEs" style="background:transparent;border:none;cursor:pointer;font-size:16px;opacity:1" title="Español">🇦🇷</button>
+    <button onclick="setLang('en')" id="langEn" style="background:transparent;border:none;cursor:pointer;font-size:16px;opacity:0.4" title="English">🇺🇸</button>
+    <div id="navRight">
+      <button class="ghost-btn" style="font-size:11px;padding:6px 12px" onclick="openAuthModal()">Iniciar sesión</button>
+    </div>
+  </div>
+</nav>
+
+<div class="toast" id="toast" style="display:none"></div>
+
+<div class="modal-overlay" id="authModal" style="display:none" onclick="if(event.target.id==='authModal')closeAuthModal()">
+  <div class="modal">
+    <div style="font-family:var(--display);font-size:20px;letter-spacing:4px;color:var(--gold);text-align:center;margin-bottom:6px" id="navStudioName2">EUGE DÍAZ STUDIO</div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px" id="authSubtitle">Iniciá sesión en tu cuenta</div>
+    <button class="google-btn" onclick="doGoogleLogin()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <span id="authBtnLabel">Iniciar sesión con Google</span>
+    </button>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted)">
+      <span id="authSwitch">¿No tenés cuenta? </span>
+      <button onclick="toggleAuthMode()" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:12px;font-family:var(--body)" id="authSwitchBtn">Registrarse</button>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:rgba(201,169,110,0.05);border-radius:10px;font-size:11px;color:var(--muted);text-align:center;line-height:1.6">
+      ⭐ Con cuenta acumulás estrellas y accedés a descuentos exclusivos
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="view active" id="view-home" style="max-width:100%;padding:0">
+  <div class="hero">
+    <div style="font-size:10px;letter-spacing:4px;color:rgba(201,169,110,0.5);margin-bottom:16px">POWERED BY GENDA</div>
+    <div id="heroLogoWrap" style="display:none;margin-bottom:16px">
+      <img id="heroLogoImg" src="" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:2px solid rgba(201,169,110,0.4);box-shadow:0 8px 32px rgba(201,169,110,0.2)"/>
+    </div>
+    <div id="heroStudioName" style="margin-bottom:20px">
+      <div style="font-family:var(--display);font-size:clamp(28px,6vw,52px);font-weight:300;letter-spacing:8px;color:var(--text);line-height:1.1">EUGE DÍAZ</div>
+      <div style="font-family:var(--display);font-size:clamp(13px,2.5vw,20px);font-weight:300;letter-spacing:10px;color:var(--gold);margin-top:4px">STUDIO</div>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.7;max-width:380px;margin-left:auto;margin-right:auto">Reservá tu próximo turno online en segundos. Elegí servicios, profesional y horario.</p>
+    <button class="gold-btn" style="border-radius:50px;padding:14px 36px;font-size:13px;letter-spacing:2px;box-shadow:0 8px 32px rgba(201,169,110,0.3)" onclick="showView('booking')">✨ Reservar Turno</button>
+  </div>
+  <div style="max-width:680px;margin:0 auto;padding:0 16px 60px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:10px;letter-spacing:3px;color:rgba(240,236,228,0.3);margin-bottom:6px">SERVICIOS</div>
+      <div style="font-family:var(--display);font-size:20px;letter-spacing:4px;color:var(--gold)">NUESTROS SERVICIOS</div>
+    </div>
+    <div id="homeServicesGrid" class="services-grid"></div>
+    <div class="card" style="margin-top:20px;background:linear-gradient(135deg,rgba(201,169,110,0.07),rgba(201,169,110,0.02));border-color:rgba(201,169,110,0.25);display:flex;align-items:center;gap:16px;padding:20px 22px">
+      <div style="font-size:36px">⭐</div>
+      <div>
+        <div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--gold);margin-bottom:6px">BENEFICIOS CON EUGE DÍAZ STUDIO</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">Cada turno suma 1 estrella · 3 estrellas = 20% OFF · 5 estrellas = Servicio gratis</div>
+        <button class="ghost-btn" style="margin-top:8px;font-size:11px;padding:5px 12px" onclick="showView('beneficios')">Ver programa →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div class="view" id="view-booking"><div id="bookingContent"></div></div>
+
+<!-- MY TURNS -->
+<div class="view" id="view-myturns">
+  <h2 class="section-title">MIS TURNOS</h2>
+  <div id="myturnsContent"></div>
+</div>
+
+<!-- BENEFICIOS -->
+<div class="view" id="view-beneficios">
+  <h2 class="section-title">BENEFICIOS CON EUGE DÍAZ STUDIO</h2>
+  <div id="beneficiosContent"></div>
+</div>
+
+<!-- AGENDA -->
+<div class="view" id="view-agenda">
+  <h2 class="section-title">GESTIÓN DE AGENDA</h2>
+  <div id="agendaContent"></div>
+</div>
+
+<!-- MI LOCAL -->
+<div class="view" id="view-local">
+  <h2 class="section-title">MI LOCAL</h2>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Personalizá la información de tu estudio</div>
+  <div id="localContent"></div>
+</div>
+
+<!-- STATS -->
+<div class="view" id="view-stats">
+  <h2 class="section-title">📊 ESTADÍSTICAS</h2>
+  <div id="statsContent"></div>
+</div>
+
+<!-- REVIEWS -->
+<div class="view" id="view-reviews">
+  <h2 class="section-title">★ RESEÑAS</h2>
+  <div id="reviewsContent"></div>
+</div>
+
+<footer style="text-align:center;padding:32px 16px 24px;border-top:1px solid rgba(201,169,110,0.1);margin-top:20px">
+  <div id="footerStudioName" style="font-family:var(--display);font-size:16px;letter-spacing:4px;color:rgba(240,236,228,0.5);margin-bottom:14px">EUGE DÍAZ STUDIO</div>
+  <div style="font-family:var(--display);font-size:10px;letter-spacing:4px;color:rgba(240,236,228,0.2);margin-bottom:6px">POWERED BY</div>
+  <div style="font-family:var(--display);font-size:24px;letter-spacing:8px;color:var(--gold);margin-bottom:10px">GENDA</div>
+  <div style="font-size:13px;color:rgba(240,236,228,0.5);font-style:italic">Digitalizá tu agenda. <span style="color:var(--gold)">Elevá tu negocio.</span></div>
+</footer>
+
+<script>
+// ═══════════════════════ DATA ═══════════════════════
+const SERVICES = [
+  {id:1,name:"Extensiones clásicas",duration:90,price:30000,icon:"✨",cat:"Pestañas"},
+  {id:2,name:"Volumen 2D",duration:100,price:30000,icon:"💫",cat:"Pestañas"},
+  {id:3,name:"Volumen 3D",duration:110,price:34000,icon:"👁️",cat:"Pestañas"},
+  {id:4,name:"Volumen 4D",duration:120,price:34000,icon:"🌙",cat:"Pestañas"},
+  {id:5,name:"Foxy / Wet effect",duration:120,price:34000,icon:"💧",cat:"Pestañas"},
+  {id:6,name:"Lifting + nutrición y tinte",duration:60,price:35000,icon:"⭐",cat:"Pestañas"},
+  {id:7,name:"Diseño y perfilado",duration:45,price:22000,icon:"🎨",cat:"Cejas"},
+  {id:8,name:"Laminado y perfilado",duration:60,price:35000,icon:"🌟",cat:"Cejas"},
+  {id:9,name:"Semipermanente",duration:60,price:26000,icon:"💅",cat:"Uñas"},
+  {id:10,name:"Kapping con polygel",duration:90,price:28000,icon:"✦",cat:"Uñas"},
+  {id:11,name:"Deco full",duration:30,price:4000,icon:"🌸",cat:"Uñas"},
+];
+const DAYS=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+const MONTHS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const today=new Date();
+const ADMIN_EMAILS=["diaz.mareugenia@gmail.com","gdannetti@gmail.com"];
+const PLAN_LIMITS={basico:2,superior:4,premium:99};
+const PLAN_NAMES={basico:"Básico",superior:"Superior",premium:"Premium"};
+const PLAN_COLORS={basico:"#888",superior:"#C9A96E",premium:"#4CAF50"};
+
+const COLOR_TEMPLATES = [
+  {name:"Estética",emoji:"✨",gold:"#C9A96E",bg:"#0e0c0a",text:"#f0ece4"},
+  {name:"Plantitas",emoji:"🌿",gold:"#7cb87a",bg:"#0d1a0e",text:"#e8f5e9"},
+  {name:"Uñas & Pestañas",emoji:"💅",gold:"#e991b8",bg:"#1a0d14",text:"#fce4ec"},
+  {name:"Barbería",emoji:"✂️",gold:"#8fa8c8",bg:"#0a0e14",text:"#e8eef5"},
+  {name:"Tatuajes",emoji:"🖤",gold:"#a0a0a0",bg:"#080808",text:"#e0e0e0"},
+  {name:"Minimalista",emoji:"◻️",gold:"#8B7355",bg:"#f5f5f0",text:"#1a1a1a"},
+  {name:"Sunset",emoji:"🌅",gold:"#e8835a",bg:"#1a0d08",text:"#fce8e0"},
+  {name:"Ocean",emoji:"🌊",gold:"#5ab8d4",bg:"#060e14",text:"#e0f4fa"},
+];
+
+// ═══════════════════════ STATE ═══════════════════════
+let user=null, authMode="login", currentView="home", lang="es";
+let step=1,selectedServices=[],selectedPro=null;
+let calYear=today.getFullYear(),calMonth=today.getMonth(),selectedDate=null,selectedTime=null;
+let clientName="",clientPhone="",confirmed=false,lastAppt=null;
+let myAppointments=[];
+let blockedSlots={};
+let agYear=today.getFullYear(),agMonth=today.getMonth(),agDay=null;
+let selectedReviewStar=0;
+let allReviews=[
+  {id:1,name:"Valentina G.",rating:5,comment:"Increíble trabajo! Las extensiones quedaron perfectas 😍",service:"Extensiones clásicas",date:"10/05/2026",avatar:"VG"},
+  {id:2,name:"Sofía M.",rating:5,comment:"Super profesional y el lugar hermoso. Vuelvo siempre!",service:"Lifting + nutrición y tinte",date:"08/05/2026",avatar:"SM"},
+  {id:3,name:"Caro R.",rating:4,comment:"Muy buena atención, quedé feliz con el resultado!",service:"Laminado y perfilado",date:"05/05/2026",avatar:"CR"},
+];
+let localConfig={
+  nombre:"Euge Díaz Studio",whatsapp:"",direccion:"",instagram:"",
+  logoUrl:"",mpPublicKey:"",mpEmail:"",plan:"superior",
+  profesionales:[{id:1,name:"Euge Díaz",specialty:"Extensiones & Lifting",avatar:"ED"}],
+  colors:{gold:"#C9A96E",bg:"#0e0c0a",text:"#f0ece4"},
+  horarioDesde:"09:00",horarioHasta:"19:00",
+  diasAtencion:[1,2,3,4,5,6],
+};
+
+// ═══════════════════════ HELPERS ═══════════════════════
+const pad=n=>String(n).padStart(2,"0");
+const fmt=p=>"$"+p.toLocaleString("es-AR");
+const getTotalPrice=()=>selectedServices.reduce((s,id)=>s+(SERVICES.find(x=>x.id===id)?.price||0),0);
+const getTotalDuration=()=>selectedServices.reduce((s,id)=>s+(SERVICES.find(x=>x.id===id)?.duration||0),0);
+const getDiscountedPrice=()=>{const t=getTotalPrice();return(user&&user.stars>=3)?Math.round(t*0.8):t;};
+const getCalDays=(y,m)=>({first:new Date(y,m,1).getDay(),total:new Date(y,m+1,0).getDate()});
+const getProfessionals=()=>(localConfig.profesionales&&localConfig.profesionales.length>0)?localConfig.profesionales:[{id:1,name:"Euge Díaz",specialty:"Extensiones & Lifting",avatar:"ED"}];
+const googleSVG=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
+
+function generateSlots(blocked=[]){
+  const slots=[];
+  for(let h=9;h<=19;h++)for(let m=0;m<60;m+=30){
+    if(h===19&&m>0)break;
+    const t=`${pad(h)}:${pad(m)}`;
+    slots.push({time:t,blocked:blocked.includes(t),taken:Math.random()>0.72});
+  }
+  return slots;
+}
+
+// ═══════════════════════ TOAST ═══════════════════════
+let toastTimer;
+function showToast(msg,type="success"){
+  const el=document.getElementById("toast");
+  const colors={success:"#4CAF50",info:"#C9A96E",error:"#f44336"};
+  el.innerHTML=`<span style="color:${colors[type]}">${type==="success"?"✓":type==="info"?"★":"!"}</span> ${msg}`;
+  el.style.borderLeft=`4px solid ${colors[type]}`;
+  el.style.display="flex";
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.style.display="none",3500);
+}
+
+// ═══════════════════════ LANG ═══════════════════════
+function setLang(l){
+  lang=l;
+  localStorage.setItem("genda_lang",l);
+  document.getElementById("langEs").style.opacity=l==="es"?"1":"0.4";
+  document.getElementById("langEn").style.opacity=l==="en"?"1":"0.4";
+  renderCurrentView();
+}
+
+// ═══════════════════════ AUTH ═══════════════════════
+function openAuthModal(){document.getElementById("authModal").style.display="flex";}
+function closeAuthModal(){document.getElementById("authModal").style.display="none";}
+function toggleAuthMode(){
+  authMode=authMode==="login"?"register":"login";
+  document.getElementById("authSubtitle").textContent=authMode==="login"?"Iniciá sesión en tu cuenta":"Creá tu cuenta";
+  document.getElementById("authBtnLabel").textContent=authMode==="login"?"Iniciar sesión con Google":"Registrarse con Google";
+  document.getElementById("authSwitch").textContent=authMode==="login"?"¿No tenés cuenta? ":"¿Ya tenés cuenta? ";
+  document.getElementById("authSwitchBtn").textContent=authMode==="login"?"Registrarse":"Iniciá sesión";
+}
+
+function doGoogleLogin(){
+  if(typeof firebase==="undefined"){showToast("Cargando Firebase, intentá en 2 segundos","info");return;}
+  const provider=new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({prompt:"select_account"});
+  firebase.auth().signInWithPopup(provider)
+    .then(r=>processUser(r.user))
+    .catch(e=>{
+      if(e.code==="auth/popup-blocked"||e.code==="auth/popup-closed-by-user"){
+        firebase.auth().signInWithRedirect(provider);
+      } else {
+        showToast("Error: "+e.code,"error");
+      }
+    });
+}
+
+async function processUser(u){
+  const isAdmin=ADMIN_EMAILS.includes(u.email);
+  const initials=u.displayName.split(" ").map(n=>n[0]||"").join("").substring(0,2).toUpperCase();
+  let stars=0;
+  if(typeof firebase!=="undefined"){
+    try{
+      const db=firebase.firestore();
+      const ref=db.collection("users").doc(u.uid);
+      const snap=await ref.get();
+      if(!snap.exists)await ref.set({name:u.displayName,email:u.email,stars:0,isAdmin,createdAt:new Date()});
+      stars=snap.exists?snap.data().stars||0:0;
+      const appts=await db.collection("appointments").where("uid","==",u.uid).get();
+      myAppointments=appts.docs.map(d=>({id:d.id,...d.data()}));
+      // Load studio config
+      const studioSnap=await db.collection("studios").doc(u.uid).get();
+      if(studioSnap.exists)localConfig={...localConfig,...studioSnap.data()};
+    }catch(e){console.log(e);}
+  }
+  user={name:u.displayName,email:u.email,avatar:initials,stars,isAdmin,uid:u.uid};
+  clientName=user.name;
+  closeAuthModal();
+  updateLogoUI();
+  renderNavRight();
+  showToast(`¡Bienvenida, ${user.name.split(" ")[0]}! 🌟`);
+  renderCurrentView();
+}
+
+function doLogout(){
+  if(typeof firebase!=="undefined")firebase.auth().signOut();
+  user=null;clientName="";
+  renderNavRight();
+  showToast("Sesión cerrada","info");
+  renderCurrentView();
+}
+
+function renderNavRight(){
+  const el=document.getElementById("navRight");
+  document.getElementById("agendaNavBtn").style.display=(user&&user.isAdmin)?"inline-block":"none";
+  document.getElementById("localNavBtn").style.display=(user&&user.isAdmin)?"inline-block":"none";
+  document.getElementById("statsNavBtn").style.display=(user&&user.isAdmin)?"inline-block":"none";
+  if(user){
+    el.innerHTML=`
+      <div class="loyalty-badge" style="font-size:11px">
+        ${[1,2,3,4,5].map(i=>`<span style="opacity:${i<=user.stars?1:0.22}">★</span>`).join("")}
+        <span style="margin-left:2px">${user.stars}/5</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;border-radius:20px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);cursor:pointer;margin-left:6px" onclick="doLogout()" title="Cerrar sesión">
+        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">${user.avatar}</div>
+        <span style="font-size:11px;color:var(--gold)">${user.name.split(" ")[0]}</span>
+      </div>`;
+  } else {
+    el.innerHTML=`<button class="ghost-btn" style="font-size:11px;padding:6px 12px" onclick="openAuthModal()">Iniciar sesión</button>`;
+  }
+}
+
+// ═══════════════════════ LOGO UI ═══════════════════════
+function updateLogoUI(){
+  const url=localConfig.logoUrl;
+  const nombre=(localConfig.nombre||"Euge Díaz Studio").toUpperCase();
+  const navLogo=document.getElementById("navLogo");
+  const navLogoImg=document.getElementById("navLogoImg");
+  const navName=document.getElementById("navStudioName");
+  if(navLogo)navLogo.style.display=url?"block":"none";
+  if(navLogoImg&&url)navLogoImg.src=url;
+  if(navName)navName.textContent=nombre;
+  const heroWrap=document.getElementById("heroLogoWrap");
+  const heroImg=document.getElementById("heroLogoImg");
+  const heroName=document.getElementById("heroStudioName");
+  if(heroWrap)heroWrap.style.display=url?"block":"none";
+  if(heroImg&&url)heroImg.src=url;
+  if(heroName){
+    const parts=nombre.split(" ");
+    const last=parts[parts.length-1];
+    const rest=parts.slice(0,parts.length-1).join(" ");
+    heroName.innerHTML=`<div style="font-family:var(--display);font-size:clamp(28px,6vw,52px);font-weight:300;letter-spacing:8px;color:var(--text);line-height:1.1">${rest}</div><div style="font-family:var(--display);font-size:clamp(13px,2.5vw,20px);font-weight:300;letter-spacing:10px;color:var(--gold);margin-top:4px">${last}</div>`;
+  }
+  const footerName=document.getElementById("footerStudioName");
+  if(footerName)footerName.textContent=nombre;
+}
+
+// ═══════════════════════ NAVIGATION ═══════════════════════
+function showView(v){
+  if((v==="agenda"||v==="local"||v==="stats")&&(!user||!user.isAdmin)){
+    showToast("Acceso solo para administradores","error");return;
+  }
+  document.querySelectorAll(".view").forEach(el=>el.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(el=>el.classList.remove("active"));
+  document.getElementById("view-"+v).classList.add("active");
+  const views=["home","booking","myturns","beneficios","agenda","local","stats","reviews"];
+  const idx=views.indexOf(v);
+  if(idx>=0){const btns=document.querySelectorAll(".nav-btn");if(btns[idx])btns[idx].classList.add("active");}
+  currentView=v;
+  renderCurrentView();
+  window.scrollTo(0,0);
+}
+
+function renderCurrentView(){
+  if(currentView==="home")renderHome();
+  else if(currentView==="booking")renderBooking();
+  else if(currentView==="myturns")renderMyTurns();
+  else if(currentView==="beneficios")renderBeneficios();
+  else if(currentView==="agenda")renderAgenda();
+  else if(currentView==="local")renderLocal();
+  else if(currentView==="stats")renderStats();
+  else if(currentView==="reviews")renderReviews();
+}
+
+// ═══════════════════════ HOME ═══════════════════════
+function renderHome(){
+  const grid=document.getElementById("homeServicesGrid");
+  if(!grid)return;
+  const cats=[...new Set(SERVICES.map(s=>s.cat))];
+  grid.innerHTML=cats.map(cat=>{
+    const svcs=SERVICES.filter(s=>s.cat===cat);
+    return `<div style="grid-column:1/-1;font-size:10px;letter-spacing:3px;color:var(--muted);margin:8px 0 4px;font-weight:600">${cat.toUpperCase()}</div>`
+      +svcs.map(s=>`<div class="card" style="text-align:center;padding:16px 12px"><div style="font-size:24px;margin-bottom:8px">${s.icon}</div><div style="font-size:12px;font-weight:500;margin-bottom:4px">${s.name}</div><div style="font-size:13px;color:var(--gold);font-weight:700">${fmt(s.price)}</div></div>`).join("");
+  }).join("");
+}
+
+// ═══════════════════════ BOOKING ═══════════════════════
+function renderBooking(){
+  const el=document.getElementById("bookingContent");
+  if(!el)return;
+  if(confirmed){renderConfirmed();return;}
+  const steps=["Servicios","Profesional","Fecha","Horario","Datos"];
+  const stepsBar=steps.map((s,i)=>{
+    const cls=i+1<step?"done":i+1===step?"active":"pending";
+    const lc=i+1<step?"var(--gold)":"rgba(255,255,255,0.08)";
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="step-dot ${cls}">${i+1<step?"✓":i+1}</div><div style="font-size:9px;text-align:center;color:${step>=i+1?"var(--gold)":"rgba(240,236,228,0.2)"}">${s}</div></div>${i<steps.length-1?`<div class="step-line" style="background:${lc}"></div>`:""}`;
+  }).join("");
+
+  const discBanner=user&&user.stars>=3?`<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;margin-bottom:12px;background:rgba(201,169,110,0.07);border:1px solid rgba(201,169,110,0.25);color:var(--gold);font-size:12px"><span style="font-size:16px">🎁</span>Tenés <strong>20% de descuento</strong> por tus beneficios.</div>`:"";
+  const freeBanner=user&&user.stars>=5?`<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;margin-bottom:12px;background:rgba(76,175,80,0.07);border:1px solid rgba(76,175,80,0.25);color:#4CAF50;font-size:12px"><span style="font-size:16px">🎉</span>¡Tenés un <strong>servicio gratis</strong>! Elegí Lifting o Extensiones.</div>`:"";
+
+  let content="";
+  if(step===1){
+    const cats=[...new Set(SERVICES.map(s=>s.cat))];
+    const cards=cats.map(cat=>{
+      const svcs=SERVICES.filter(s=>s.cat===cat);
+      return `<div style="grid-column:1/-1;font-size:10px;letter-spacing:3px;color:var(--muted);margin:12px 0 4px;font-weight:600">${cat.toUpperCase()}</div>`
+        +svcs.map(s=>{
+          const sel=selectedServices.includes(s.id);
+          const isFree=user&&user.stars>=5&&(s.id===1||s.id===6);
+          const price=isFree?`<span style="text-decoration:line-through;font-size:11px;color:rgba(240,236,228,0.3)">${fmt(s.price)}</span> <span style="color:#4CAF50;font-weight:700">GRATIS</span>`:`<span style="color:var(--gold);font-weight:700">${fmt(s.price)}</span>`;
+          return `<div class="service-item ${sel?"selected":""}" onclick="toggleService(${s.id})"><div style="font-size:22px;margin-bottom:8px">${s.icon}</div><div style="font-size:12px;font-weight:500;margin-bottom:3px">${s.name}</div><div style="font-size:10px;color:var(--muted);margin-bottom:5px">${s.duration} min</div>${price}<div style="width:18px;height:18px;border-radius:50%;border:2px solid ${sel?"var(--gold)":"rgba(255,255,255,0.15)"};background:${sel?"var(--gold)":"transparent"};display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--bg);margin:6px auto 0">${sel?"✓":""}</div></div>`;
+        }).join("");
+    }).join("");
+    const total=getTotalPrice(),disc=getDiscountedPrice();
+    const totRow=selectedServices.length>0?`<div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px"><span style="color:var(--muted)">Total: </span>${user&&user.stars>=3?`<span style="text-decoration:line-through;color:rgba(240,236,228,0.3);margin-right:4px">${fmt(total)}</span>`:""}<span style="color:var(--gold);font-weight:700">${fmt(disc)}</span>${user&&user.stars>=3?`<span style="color:#4CAF50;font-size:11px;margin-left:4px">(-20%)</span>`:""}</div><button class="gold-btn" onclick="goStep(2)">Siguiente →</button></div>`:"";
+    content=`<h2 class="section-title">ELEGÍ TUS SERVICIOS</h2><div class="services-grid">${cards}</div>${totRow}`;
+  }
+  else if(step===2){
+    const proCards=getProfessionals().map(p=>`<div class="pro-item ${selectedPro===p.id?"selected":""}" onclick="selectPro(${p.id})"><div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--bg);flex-shrink:0">${p.avatar||p.name.substring(0,2).toUpperCase()}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${p.name}</div><div style="font-size:11px;color:var(--muted)">${p.specialty||""}</div></div><div style="width:20px;height:20px;border-radius:50%;border:2px solid ${selectedPro===p.id?"var(--gold)":"rgba(255,255,255,0.15)"};background:${selectedPro===p.id?"var(--gold)":"transparent"};display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--bg)">${selectedPro===p.id?"✓":""}</div></div>`).join("");
+    content=`<h2 class="section-title">ELEGÍ PROFESIONAL</h2>${proCards}<div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end"><button class="ghost-btn" onclick="goStep(1)">← Atrás</button>${selectedPro!==null?`<button class="gold-btn" onclick="goStep(3)">Siguiente →</button>`:""}</div>`;
+  }
+  else if(step===3){
+    const {first,total}=getCalDays(calYear,calMonth);
+    const days=Array(first).fill(`<span></span>`).concat(Array.from({length:total},(_,i)=>{
+      const d=i+1,isPast=new Date(calYear,calMonth,d)<new Date(today.getFullYear(),today.getMonth(),today.getDate()),sel=selectedDate===d;
+      return `<button class="cal-day ${sel?"selected":""}" ${isPast?"disabled":""} onclick="selectDate(${d})">${d}</button>`;
+    })).join("");
+    content=`<h2 class="section-title">ELEGÍ UNA FECHA</h2><div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><button class="ghost-btn" style="padding:5px 12px" onclick="changeCalMonth(-1)">‹</button><span style="font-size:13px;color:var(--gold);letter-spacing:2px">${MONTHS[calMonth]} ${calYear}</span><button class="ghost-btn" style="padding:5px 12px" onclick="changeCalMonth(1)">›</button></div><div class="cal-grid">${DAYS.map(d=>`<div style="text-align:center;font-size:9px;color:rgba(240,236,228,0.3);padding:4px 0">${d}</div>`).join("")}${days}</div></div><div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end"><button class="ghost-btn" onclick="goStep(2)">← Atrás</button>${selectedDate!==null?`<button class="gold-btn" onclick="goStep(4)">Siguiente →</button>`:""}</div>`;
+  }
+  else if(step===4){
+    const key=`${calYear}-${calMonth}-${selectedDate}`;
+    const slots=generateSlots(blockedSlots[key]||[]);
+    const timeBtns=slots.map(s=>{
+      if(s.blocked)return`<button class="time-btn blocked" disabled>🔒 ${s.time}</button>`;
+      if(s.taken)return`<button class="time-btn taken" disabled>${s.time}</button>`;
+      return`<button class="time-btn ${selectedTime===s.time?"selected":""}" onclick="selectTime('${s.time}')">${s.time}</button>`;
+    }).join("");
+    content=`<h2 class="section-title">ELEGÍ UN HORARIO</h2><div class="card"><div class="time-grid">${timeBtns}</div></div><div style="margin-top:8px;text-align:center;font-size:10px;color:rgba(240,236,228,0.3);margin-bottom:12px">🔒 bloqueado · gris = ocupado</div><div style="display:flex;gap:10px;justify-content:flex-end"><button class="ghost-btn" onclick="goStep(3)">← Atrás</button>${selectedTime?`<button class="gold-btn" onclick="goStep(5)">Siguiente →</button>`:""}</div>`;
+  }
+  else if(step===5){
+    const pro=getProfessionals().find(p=>p.id===selectedPro);
+    const svcNames=selectedServices.map(id=>SERVICES.find(s=>s.id===id)?.name).join(", ");
+    const dur=getTotalDuration(),price=getDiscountedPrice(),rawPrice=getTotalPrice();
+    const loginBox=!user?`<div class="card" style="margin-bottom:14px;padding:18px"><div style="font-size:13px;color:var(--muted);margin-bottom:12px">¿Tenés cuenta? Iniciá sesión para acumular estrellas</div><button class="google-btn" onclick="doGoogleLogin()">${googleSVG} Continuar con Google</button><div style="text-align:center;font-size:11px;color:rgba(240,236,228,0.3);margin:10px 0">o continuá como invitado</div></div>`:"";
+    const userBox=user?`<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(201,169,110,0.06);border-radius:10px;border:1px solid rgba(201,169,110,0.18);margin-bottom:14px"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--bg);flex-shrink:0">${user.avatar}</div><div><div style="font-size:13px;font-weight:600">${user.name}</div><div style="font-size:11px;color:var(--muted)">${user.email}</div></div><div class="loyalty-badge" style="margin-left:auto;font-size:11px">${[1,2,3,4,5].map(i=>`<span style="opacity:${i<=user.stars?1:0.22}">★</span>`).join("")} ${user.stars}/5</div></div>`:"";
+    const priceLine=price!==rawPrice?`<span style="text-decoration:line-through;color:rgba(240,236,228,0.3);margin-right:4px">${fmt(rawPrice)}</span><span style="color:var(--gold);font-weight:700">${fmt(price)}</span>`:`<span style="color:var(--gold);font-weight:700">${fmt(price)}</span>`;
+    content=`<h2 class="section-title">TUS DATOS</h2>${loginBox}<div class="card">${userBox}<div style="display:flex;flex-direction:column;gap:12px"><div><label class="label">NOMBRE COMPLETO</label><input class="input-field" id="inputName" value="${clientName}" oninput="clientName=this.value;checkConfirmBtn()" placeholder="Tu nombre..."/></div><div><label class="label">WHATSAPP</label><input class="input-field" id="inputPhone" value="${clientPhone}" oninput="clientPhone=this.value;checkConfirmBtn()" placeholder="+54 9 11 1234-5678" type="tel"/></div></div><div class="summary"><div style="font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:10px">RESUMEN DEL TURNO</div>${[["Servicios",svcNames||"—"],["Profesional",pro?.name||"—"],["Fecha",selectedDate?`${pad(selectedDate)}/${pad(calMonth+1)}/${calYear}`:"—"],["Horario",selectedTime?selectedTime+"hs":"—"],["Duración",dur+" min"],["Precio",priceLine]].map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px"><span style="color:var(--muted)">${k}</span><span>${v}</span></div>`).join("")}</div><div style="font-size:11px;color:rgba(240,236,228,0.32);margin-top:10px;line-height:1.8">📲 Podés enviar recordatorio por WhatsApp<br>📅 Podés agregar el turno a tu Google Calendar</div></div><div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end"><button class="ghost-btn" onclick="goStep(4)">← Atrás</button><button class="gold-btn" id="confirmBtn" onclick="doConfirm()" disabled>Confirmar Turno ✨</button></div>`;
+  }
+
+  el.innerHTML=`<div class="steps-bar">${stepsBar}</div>${discBanner}${freeBanner}${content}`;
+  checkConfirmBtn();
+}
+
+function checkConfirmBtn(){const btn=document.getElementById("confirmBtn");if(btn)btn.disabled=!(clientName.trim()&&clientPhone.trim());}
+function toggleService(id){if(selectedServices.includes(id))selectedServices=selectedServices.filter(x=>x!==id);else selectedServices.push(id);renderBooking();}
+function selectPro(id){selectedPro=id;renderBooking();}
+function selectDate(d){selectedDate=d;renderBooking();}
+function selectTime(t){selectedTime=t;renderBooking();}
+function goStep(s){step=s;renderBooking();window.scrollTo(0,0);}
+function changeCalMonth(dir){calMonth+=dir;if(calMonth<0){calMonth=11;calYear--;}if(calMonth>11){calMonth=0;calYear++;}renderBooking();}
+
+function doConfirm(){
+  const pro=getProfessionals().find(p=>p.id===selectedPro);
+  const svcNames=selectedServices.map(id=>SERVICES.find(s=>s.id===id)?.name).join(", ");
+  const dateStr=`${pad(selectedDate)}/${pad(calMonth+1)}/${calYear}`;
+  const price=getDiscountedPrice(),dur=getTotalDuration();
+  const [hh,mm]=(selectedTime||"09:00").split(":").map(Number);
+  const gcStart=calYear+pad(calMonth+1)+pad(selectedDate)+"T"+pad(hh)+pad(mm)+"00";
+  const endMin=hh*60+mm+dur;
+  const gcEnd=calYear+pad(calMonth+1)+pad(selectedDate)+"T"+pad(Math.floor(endMin/60)%24)+pad(endMin%60)+"00";
+  const gcUrl="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Euge Díaz Studio - "+svcNames)+"&dates="+gcStart+"/"+gcEnd+"&details="+encodeURIComponent("Profesional: "+(pro?.name||"")+" | Precio: "+fmt(price))+"&location="+encodeURIComponent("Euge Díaz Studio");
+  const rawPhone=clientPhone.replace(/[^0-9]/g,"");
+  const waText="✨ *RECORDATORIO - EUGE DÍAZ STUDIO*\n\nHola "+clientName+"! 👋\nTe recordamos tu turno:\n📅 "+dateStr+" a las "+selectedTime+"hs\n💆 "+svcNames+"\n👩‍💼 "+(pro?.name||"")+"\n💰 "+fmt(price)+"\n\nEuge Díaz Studio 🌿";
+  const waUrl=rawPhone.length>=8?"https://wa.me/"+rawPhone+"?text="+encodeURIComponent(waText):null;
+  lastAppt={id:Date.now(),service:svcNames,pro:pro?.name,date:dateStr,time:selectedTime,price,gcUrl,waUrl};
+  myAppointments.push(lastAppt);
+  if(user){
+    user.stars=Math.min(5,user.stars+1);
+    renderNavRight();
+    if(user.stars===3)setTimeout(()=>showToast("🎉 Desbloqueaste 20% de descuento!","info"),600);
+    if(user.stars===5)setTimeout(()=>showToast("🎁 Ganaste un servicio gratis!","info"),600);
+    if(typeof firebase!=="undefined"){
+      firebase.firestore().collection("appointments").add({uid:user.uid,userName:user.name,userEmail:user.email,service:svcNames,pro:pro?.name,date:dateStr,time:selectedTime,price,status:"confirmed",createdAt:new Date()}).catch(e=>console.log(e));
+      firebase.firestore().collection("users").doc(user.uid).update({stars:user.stars}).catch(e=>console.log(e));
+    }
+  }
+  confirmed=true;renderBooking();showToast("¡Turno confirmado! 🎉");
+}
+
+function renderConfirmed(){
+  const el=document.getElementById("bookingContent");
+  const loyaltyBox=user?`<div class="card" style="margin-bottom:18px;background:rgba(201,169,110,0.06);border-color:rgba(201,169,110,0.22);text-align:center;padding:16px"><div style="font-size:13px;color:var(--gold);margin-bottom:8px">⭐ ¡Sumaste 1 estrella!</div><div class="loyalty-badge" style="display:inline-flex">${[1,2,3,4,5].map(i=>`<span style="opacity:${i<=user.stars?1:0.22}">★</span>`).join("")} ${user.stars}/5</div>${user.stars===3?`<div style="font-size:11px;color:var(--muted);margin-top:6px">🎁 Próximo turno con 20% OFF</div>`:""}${user.stars===5?`<div style="font-size:11px;color:#4CAF50;margin-top:6px">🎉 ¡Ganaste un servicio gratis!</div>`:""}</div>`:"";
+  const gcBtn=lastAppt?.gcUrl?`<a href="${lastAppt.gcUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border-radius:12px;background:rgba(66,133,244,0.1);border:1.5px solid rgba(66,133,244,0.35);color:#6ab0ff;font-size:13px;font-family:var(--body);font-weight:600;text-decoration:none;margin-bottom:10px">📅 Agregar a Google Calendar</a>`:"";
+  const waBtn=lastAppt?.waUrl?`<a href="${lastAppt.waUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border-radius:12px;background:rgba(37,211,102,0.1);border:1.5px solid rgba(37,211,102,0.35);color:#25D366;font-size:13px;font-family:var(--body);font-weight:600;text-decoration:none;margin-bottom:16px">📲 Enviar recordatorio por WhatsApp</a>`:"";
+  el.innerHTML=`<div style="text-align:center;padding:40px 0"><div style="font-size:50px;margin-bottom:14px">✨</div><div style="font-family:var(--display);font-size:26px;letter-spacing:4px;color:var(--gold);margin-bottom:10px">¡TURNO CONFIRMADO!</div><div style="font-size:13px;color:var(--muted);margin-bottom:22px">Guardá el turno en tu calendario y enviá el recordatorio.</div>${gcBtn}${waBtn}${loyaltyBox}<button class="gold-btn" onclick="resetBooking()">Volver al inicio</button></div>`;
+}
+
+function resetBooking(){step=1;selectedServices=[];selectedPro=null;selectedDate=null;selectedTime=null;clientName=user?.name||"";clientPhone="";confirmed=false;lastAppt=null;showView("home");}
+
+// ═══════════════════════ MY TURNS ═══════════════════════
+function renderMyTurns(){
+  const el=document.getElementById("myturnsContent");if(!el)return;
+  if(!user){el.innerHTML=`<div class="card" style="text-align:center;padding:28px"><div style="font-size:13px;color:var(--muted);margin-bottom:14px">Iniciá sesión para ver tus turnos</div><button class="google-btn" onclick="doGoogleLogin()">${googleSVG} Iniciar sesión con Google</button></div>`;return;}
+  if(!myAppointments.length){el.innerHTML=`<div class="card" style="text-align:center;padding:28px;color:var(--muted);font-size:13px">No tenés turnos registrados aún</div>`;return;}
+  el.innerHTML=myAppointments.map(a=>`<div class="appt-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(var(--gold),var(--gold-dark))"></div><div style="padding-left:10px"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">${a.service}</div><div style="font-size:12px;color:var(--muted)">${a.pro||""}</div></div><div style="text-align:right"><div style="font-size:13px;color:var(--gold);font-weight:700">${fmt(a.price)}</div><div style="font-size:10px;margin-top:3px;padding:2px 8px;border-radius:20px;background:rgba(76,175,80,0.14);color:#4CAF50;display:inline-block">Confirmado</div></div></div><div style="margin-top:8px;display:flex;gap:12px;font-size:12px;color:var(--muted)"><span>📅 ${a.date}</span><span>🕐 ${a.time}hs</span></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${a.waUrl&&user.isAdmin?`<a href="${a.waUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25);color:#25D366;font-size:11px;text-decoration:none">📲 Recordatorio</a>`:""}${a.gcUrl?`<a href="${a.gcUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.25);color:#6ab0ff;font-size:11px;text-decoration:none">📅 Google Cal</a>`:""}</div></div></div>`).join("");
+}
+
+// ═══════════════════════ BENEFICIOS ═══════════════════════
+function renderBeneficios(){
+  const el=document.getElementById("beneficiosContent");if(!el)return;
+  const stars=user?.stars||0;
+  const nextMsg=stars<3?`${3-stars} turno(s) para 20% OFF`:stars<5?`${5-stars} turno(s) para servicio gratis`:"¡Máximo nivel! 🎉";
+  const milestones=[{n:1,label:"1 ★",desc:"Bienvenida al programa"},{n:2,label:"2 ★★",desc:"Seguís sumando"},{n:3,label:"3 ★★★",desc:"20% de descuento en tu próximo turno 🎁"},{n:4,label:"4 ★★★★",desc:"Casi ahí..."},{n:5,label:"5 ★★★★★",desc:"Lifting o Extensiones SIN CARGO 🎉"}];
+  el.innerHTML=`<div class="card" style="margin-bottom:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">Tus estrellas</div><div class="loyalty-badge">${[1,2,3,4,5].map(i=>`<span style="opacity:${i<=stars?1:0.22}">★</span>`).join("")} ${stars}/5</div></div><div style="text-align:right"><div style="font-size:11px;color:var(--muted)">Próxima recompensa</div><div style="font-size:13px;color:var(--gold);margin-top:4px">${nextMsg}</div></div></div><div style="height:1px;background:var(--border);margin:0 0 16px"></div>${milestones.map(m=>`<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;opacity:${stars>=m.n?1:0.4}"><div style="width:34px;height:34px;border-radius:50%;${stars>=m.n?"background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg)":"background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted)"};display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${stars>=m.n?"✓":m.n}</div><div><div style="font-size:13px;font-weight:600;color:${stars>=m.n?"var(--gold)":"var(--text)"}">${m.label}</div><div style="font-size:11px;color:var(--muted)">${m.desc}</div></div></div>`).join("")}</div>${!user?`<div class="card" style="text-align:center;padding:24px"><div style="font-size:20px;margin-bottom:10px">⭐</div><div style="font-size:13px;color:var(--muted);margin-bottom:14px">Creá tu cuenta para acumular estrellas y acceder a recompensas exclusivas</div><button class="google-btn" onclick="doGoogleLogin()">${googleSVG} Crear cuenta con Google</button></div>`:""}`;
+}
+
+// ═══════════════════════ REVIEWS ═══════════════════════
+function renderReviews(){
+  const el=document.getElementById("reviewsContent");if(!el)return;
+  const avg=allReviews.length?(allReviews.reduce((s,r)=>s+r.rating,0)/allReviews.length).toFixed(1):"—";
+  const stars=n=>[1,2,3,4,5].map(i=>`<span style="color:${i<=n?"var(--gold)":"rgba(255,255,255,0.2)"}"">★</span>`).join("");
+  const form=user?`<div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:12px">✍️ Dejá tu reseña</div><div style="display:flex;gap:8px;margin-bottom:12px">${[1,2,3,4,5].map(i=>`<span onclick="setReviewStar(${i})" id="rstar-${i}" style="font-size:28px;cursor:pointer;color:rgba(255,255,255,0.2);transition:color 0.15s">★</span>`).join("")}</div><textarea id="reviewText" class="input-field" style="min-height:80px;resize:none;margin-bottom:10px" placeholder="Contá tu experiencia..."></textarea><button class="gold-btn" style="width:100%" onclick="submitReview()">Publicar reseña</button></div>`:`<div class="card" style="margin-bottom:14px;text-align:center;padding:24px"><div style="font-size:13px;color:var(--muted);margin-bottom:14px">Iniciá sesión para dejar una reseña</div><button class="google-btn" onclick="doGoogleLogin()" style="max-width:280px;margin:0 auto">${googleSVG} Iniciar sesión</button></div>`;
+  el.innerHTML=`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:18px;padding:22px"><div style="text-align:center"><div style="font-size:44px;font-family:var(--display);color:var(--gold);font-weight:300;line-height:1">${avg}</div><div style="font-size:14px;margin:4px 0">${stars(Math.round(avg))}</div><div style="font-size:11px;color:var(--muted)">${allReviews.length} reseñas</div></div><div style="flex:1">${[5,4,3,2,1].map(n=>{const c=allReviews.filter(r=>r.rating===n).length,pct=allReviews.length?Math.round(c/allReviews.length*100):0;return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:11px;color:var(--gold);width:8px">${n}</span><span style="color:var(--gold);font-size:11px">★</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:3px"></div></div><span style="font-size:11px;color:var(--muted);width:20px">${c}</span></div>`;}).join("")}</div></div>${form}${allReviews.map(r=>`<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--bg);flex-shrink:0">${r.avatar}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${r.name}</div><div style="font-size:11px;color:var(--muted)">${r.service} · ${r.date}</div></div><div>${stars(r.rating)}</div></div><div style="font-size:13px;color:rgba(240,236,228,0.7);line-height:1.6;font-style:italic">"${r.comment}"</div></div>`).join("")}`;
+}
+function setReviewStar(n){selectedReviewStar=n;for(let i=1;i<=5;i++){const s=document.getElementById("rstar-"+i);if(s)s.style.color=i<=n?"var(--gold)":"rgba(255,255,255,0.2)";}}
+async function submitReview(){
+  if(!selectedReviewStar){showToast("Elegí una calificación","error");return;}
+  const text=document.getElementById("reviewText")?.value?.trim();
+  if(!text){showToast("Escribí un comentario","error");return;}
+  const initials=user.name.split(" ").map(n=>n[0]).join("").substring(0,2).toUpperCase();
+  const r={id:Date.now(),name:user.name.split(" ")[0]+" "+(user.name.split(" ")[1]?.[0]||"")+".",rating:selectedReviewStar,comment:text,service:myAppointments.length?myAppointments[myAppointments.length-1].service:"Servicio",date:new Date().toLocaleDateString("es-AR"),avatar:initials};
+  allReviews.unshift(r);
+  if(typeof firebase!=="undefined"&&user?.uid)firebase.firestore().collection("reviews").add({...r,uid:user.uid}).catch(e=>console.log(e));
+  selectedReviewStar=0;showToast("¡Gracias por tu reseña! 🌟");renderReviews();
+}
+
+// ═══════════════════════ STATS ═══════════════════════
+function renderStats(){
+  const el=document.getElementById("statsContent");if(!el)return;
+  const todayStr=new Date().toLocaleDateString("es-AR");
+  const todayAppts=myAppointments.filter(a=>a.date===todayStr);
+  const totalRev=myAppointments.reduce((s,a)=>s+(a.price||0),0);
+  const avgRating=allReviews.length?(allReviews.reduce((s,r)=>s+r.rating,0)/allReviews.length).toFixed(1):"—";
+  const svcCount={};myAppointments.forEach(a=>{svcCount[a.service]=(svcCount[a.service]||0)+1;});
+  const topSvcs=Object.entries(svcCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const kpi=(icon,label,val,sub="")=>`<div class="card" style="text-align:center;padding:18px"><div style="font-size:26px;margin-bottom:6px">${icon}</div><div style="font-size:22px;font-weight:700;color:var(--gold);font-family:var(--display)">${val}</div><div style="font-size:12px;font-weight:600;margin:3px 0">${label}</div>${sub?`<div style="font-size:10px;color:var(--muted)">${sub}</div>`:""}</div>`;
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">${kpi("📅","Turnos hoy",todayAppts.length,myAppointments.length+" totales")}${kpi("💰","Ingresos","$"+totalRevenue(totalRev),"estimado")}${kpi("⭐","Calificación",avgRating,allReviews.length+" reseñas")}${kpi("👩‍💼","Profesionales",(localConfig.profesionales||[]).length,"activas")}</div><div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:12px">📋 TURNOS DE HOY — ${todayStr}</div>${todayAppts.length===0?`<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted)">No hay turnos para hoy</div>`:todayAppts.map(a=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:6px"><div style="font-size:18px;font-weight:700;color:var(--gold);font-family:var(--display);width:48px;flex-shrink:0">${a.time||"--"}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${a.userName||a.service}</div><div style="font-size:11px;color:var(--muted)">${a.service}</div></div><div style="font-size:13px;color:var(--gold);font-weight:700">${fmt(a.price||0)}</div></div>`).join("")}</div><div class="card" style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:12px">🏆 SERVICIOS MÁS PEDIDOS</div>${topSvcs.length===0?`<div style="text-align:center;padding:14px;font-size:13px;color:var(--muted)">Sin datos aún</div>`:topSvcs.map(([svc,count],i)=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:22px;height:22px;border-radius:50%;background:${i===0?"linear-gradient(135deg,var(--gold),var(--gold-dark))":"rgba(255,255,255,0.08)"};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${i===0?"var(--bg)":"var(--text)"};flex-shrink:0">${i+1}</div><div style="flex:1;font-size:13px">${svc}</div><div style="font-size:12px;color:var(--gold);font-weight:600">${count}x</div></div>`).join("")}</div><div class="card"><div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:12px">💬 ÚLTIMAS RESEÑAS</div>${allReviews.slice(0,3).map(r=>`<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;font-weight:600">${r.name}</span><span style="color:var(--gold);font-size:11px">${"★".repeat(r.rating)}</span></div><div style="font-size:12px;color:var(--muted);font-style:italic">"${r.comment.substring(0,60)}${r.comment.length>60?"...":""}"</div></div>`).join("")}<button class="ghost-btn" style="width:100%;margin-top:10px;font-size:12px" onclick="showView('reviews')">Ver todas →</button></div>`;
+}
+function totalRevenue(v){return v.toLocaleString("es-AR");}
+
+// ═══════════════════════ AGENDA ═══════════════════════
+function renderAgenda(){
+  const el=document.getElementById("agendaContent");if(!el)return;
+  const {first,total}=getCalDays(agYear,agMonth);
+  const days=Array(first).fill(`<span></span>`).concat(Array.from({length:total},(_,i)=>{
+    const d=i+1,sel=agDay===d,key=`${agYear}-${agMonth}-${d}`,hasB=(blockedSlots[key]||[]).length>0;
+    return `<button class="cal-day ${sel?"selected":""}" onclick="selectAgDay(${d})" style="${hasB&&!sel?"background:rgba(244,67,54,0.12);border-color:rgba(244,67,54,0.3)":""}">${d}</button>`;
+  })).join("");
+  let timesHtml=`<div style="text-align:center;padding:28px 10px;font-size:12px;color:rgba(240,236,228,0.3)">Seleccioná un día</div>`;
+  if(agDay!==null){
+    const key=`${agYear}-${agMonth}-${agDay}`,blocked=blockedSlots[key]||[];
+    const allT=[];for(let h=9;h<=19;h++)for(let m=0;m<60;m+=30){if(h===19&&m>0)break;allT.push(`${pad(h)}:${pad(m)}`);}
+    timesHtml=`<div style="font-size:13px;color:var(--gold);margin-bottom:10px">${agDay}/${agMonth+1}/${agYear}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;max-height:260px;overflow-y:auto">${allT.map(t=>`<button class="block-btn ${blocked.includes(t)?"blocked":""}" onclick="toggleBlock('${t}')">${blocked.includes(t)?"🔒":""} ${t}</button>`).join("")}</div><div style="margin-top:8px;font-size:10px;color:rgba(240,236,228,0.3)">Tocá para bloquear/desbloquear</div>`;
+  }
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px"><div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><button class="ghost-btn" style="padding:4px 10px" onclick="changeAgMonth(-1)">‹</button><span style="font-size:12px;color:var(--gold)">${MONTHS[agMonth]} ${agYear}</span><button class="ghost-btn" style="padding:4px 10px" onclick="changeAgMonth(1)">›</button></div><div class="cal-grid">${DAYS.map(d=>`<div style="text-align:center;font-size:9px;color:rgba(240,236,228,0.3);padding:3px 0">${d}</div>`).join("")}${days}</div></div><div class="card">${timesHtml}</div></div><div class="card" style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;margin-bottom:14px">🔒 Bloqueo masivo</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px"><div><label class="label">DESDE</label><input type="date" id="blockFrom" class="input-field" style="padding:10px 12px"/></div><div><label class="label">HASTA</label><input type="date" id="blockTo" class="input-field" style="padding:10px 12px"/></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><div class="reminder-chip on" data-time="todo" onclick="this.classList.toggle('on')">✓ Todo el día</div>${["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"].map(t=>`<div class="reminder-chip" data-time="${t}" onclick="this.classList.toggle('on')">${t}</div>`).join("")}</div><button class="gold-btn" style="width:100%" onclick="applyBulkBlock()">🔒 Aplicar bloqueo masivo</button><div id="bulkResult" style="margin-top:8px;font-size:12px;color:#4CAF50;text-align:center"></div></div><div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">📲 Recordatorio Automático WhatsApp</div><div style="font-size:12px;color:var(--muted)">Enviá recordatorios automáticos antes del turno</div></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><div class="reminder-chip on" onclick="this.classList.toggle('on')">✓ 24hs antes</div><div class="reminder-chip" onclick="this.classList.toggle('on')">2hs antes</div><div class="reminder-chip" onclick="this.classList.toggle('on')">30min antes</div></div><div style="background:rgba(37,211,102,0.05);border:1px solid rgba(37,211,102,0.15);border-radius:10px;padding:12px;font-size:12px;color:rgba(240,236,228,0.6);line-height:1.7">✨ <strong>RECORDATORIO - EUGE DÍAZ STUDIO</strong><br>Hola {nombre}! 👋<br>Te recordamos tu turno:<br>📅 {fecha} a las {hora}hs · 💆 {servicio}</div></div>`;
+}
+function selectAgDay(d){agDay=d;renderAgenda();}
+function changeAgMonth(dir){agMonth+=dir;if(agMonth<0){agMonth=11;agYear--;}if(agMonth>11){agMonth=0;agYear++;}agDay=null;renderAgenda();}
+function toggleBlock(t){const key=`${agYear}-${agMonth}-${agDay}`;if(!blockedSlots[key])blockedSlots[key]=[];const idx=blockedSlots[key].indexOf(t);if(idx>=0)blockedSlots[key].splice(idx,1);else blockedSlots[key].push(t);renderAgenda();}
+function applyBulkBlock(){
+  const from=document.getElementById("blockFrom").value,to=document.getElementById("blockTo").value;
+  if(!from||!to){showToast("Elegí fecha desde y hasta","error");return;}
+  const allT=[];for(let h=9;h<=19;h++)for(let m=0;m<60;m+=30){if(h===19&&m>0)break;allT.push(`${pad(h)}:${pad(m)}`);}
+  const chips=document.querySelectorAll("#agendaContent .reminder-chip.on[data-time]");
+  let toBlock=[];
+  chips.forEach(c=>{const t=c.dataset.time;if(t==="todo")toBlock=[...allT];else{toBlock.push(t);const [h]=t.split(":").map(Number);toBlock.push(`${pad(h)}:30`);}});
+  toBlock=[...new Set(toBlock)];
+  let d=new Date(from+"T12:00:00"),end=new Date(to+"T12:00:00"),count=0;
+  while(d<=end){const key=d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate();if(!blockedSlots[key])blockedSlots[key]=[];toBlock.forEach(t=>{if(!blockedSlots[key].includes(t))blockedSlots[key].push(t);});count++;d.setDate(d.getDate()+1);}
+  document.getElementById("bulkResult").textContent=`✓ ${count} días bloqueados con ${toBlock.length} horarios`;
+  showToast("Bloqueo masivo aplicado! "+count+" días","success");
+  renderAgenda();
+}
+
+// ═══════════════════════ MI LOCAL ═══════════════════════
+function renderLocal(){
+  const el=document.getElementById("localContent");if(!el)return;
+  const plan=localConfig.plan||"superior",maxPros=PLAN_LIMITS[plan],pros=localConfig.profesionales||[];
+  const colors=localConfig.colors||{gold:"#C9A96E",bg:"#0e0c0a",text:"#f0ece4"};
+
+  el.innerHTML=`
+    <!-- PLAN -->
+    <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(201,169,110,0.07),rgba(201,169,110,0.02));border-color:rgba(201,169,110,0.25)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div><div style="font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">PLAN ACTUAL</div><span style="font-size:18px;font-weight:700;color:${PLAN_COLORS[plan]}">${PLAN_NAMES[plan].toUpperCase()}</span></div>
+        <div style="font-size:11px;color:var(--muted)">${pros.length}/${maxPros===99?"∞":maxPros} prof.</div>
+      </div>
+      <div style="display:flex;gap:8px">${["basico","superior","premium"].map(p=>`<div onclick="changePlan('${p}')" style="flex:1;padding:10px 6px;border-radius:10px;text-align:center;cursor:pointer;border:1.5px solid ${plan===p?PLAN_COLORS[p]:"rgba(255,255,255,0.08)"};background:${plan===p?PLAN_COLORS[p]+"18":"transparent"}"><div style="font-size:12px;font-weight:600;color:${PLAN_COLORS[p]}">${PLAN_NAMES[p]}</div><div style="font-size:10px;color:var(--muted)">${p==="basico"?"2 prof.":p==="superior"?"4 prof.":"Ilimitado"}</div></div>`).join("")}</div>
+    </div>
+
+    <!-- LOGO -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px">🖼️ LOGO</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--bg);flex-shrink:0;overflow:hidden">${localConfig.logoUrl?`<img src="${localConfig.logoUrl}" style="width:100%;height:100%;object-fit:cover"/>`:"ED"}</div>
+        <div><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Aparecerá en la app de tus clientas</div><label style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.3);border-radius:8px;cursor:pointer;font-size:12px;color:var(--gold)">📁 Elegir imagen<input type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(event)"/></label></div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px">📋 INFORMACIÓN</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div><label class="label">NOMBRE</label><input class="input-field" id="localNombre" value="${localConfig.nombre}" placeholder="Nombre..."/></div>
+        <div><label class="label">DIRECCIÓN</label><input class="input-field" id="localDireccion" value="${localConfig.direccion||""}" placeholder="Dirección..."/></div>
+        <div><label class="label">INSTAGRAM</label><input class="input-field" id="localInstagram" value="${localConfig.instagram||""}" placeholder="@tuestudio"/></div>
+      </div>
+    </div>
+
+    <!-- HORARIOS -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px">🕐 HORARIOS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label class="label">ABRE</label><input class="input-field" id="horarioDesde" type="time" value="${localConfig.horarioDesde||"09:00"}"/></div>
+        <div><label class="label">CIERRA</label><input class="input-field" id="horarioHasta" type="time" value="${localConfig.horarioHasta||"19:00"}"/></div>
+      </div>
+      <label class="label" style="margin-bottom:8px;display:block">DÍAS</label>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"].map((d,i)=>{const active=(localConfig.diasAtencion||[1,2,3,4,5,6]).includes(i);return`<div onclick="toggleDia(${i})" id="dia-${i}" style="padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;border:1px solid ${active?"var(--gold)":"rgba(255,255,255,0.1)"};background:${active?"rgba(201,169,110,0.12)":"transparent"};color:${active?"var(--gold)":"var(--muted)"}">${d}</div>`;}).join("")}</div>
+    </div>
+
+    <!-- COLORES -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:6px">🎨 COLORES</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Templates prediseñados</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${COLOR_TEMPLATES.map(tp=>`<div onclick="applyTemplate('${tp.gold}','${tp.bg}','${tp.text}')" style="cursor:pointer;padding:10px 6px;border-radius:10px;text-align:center;border:1px solid rgba(255,255,255,0.08);background:${tp.bg}"><div style="font-size:18px;margin-bottom:4px">${tp.emoji}</div><div style="font-size:10px;color:${tp.text};opacity:0.8">${tp.name}</div><div style="width:16px;height:3px;border-radius:2px;background:${tp.gold};margin:5px auto 0"></div></div>`).join("")}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">O personalizá los colores</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+        <div style="text-align:center"><label class="label" style="margin-bottom:6px;display:block">PRINCIPAL</label><input type="color" id="colorGold" value="${colors.gold}" onchange="previewColor('gold',this.value)" style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);cursor:pointer;padding:3px;background:transparent;display:block;margin:0 auto"/></div>
+        <div style="text-align:center"><label class="label" style="margin-bottom:6px;display:block">FONDO</label><input type="color" id="colorBg" value="${colors.bg}" onchange="previewColor('bg',this.value)" style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);cursor:pointer;padding:3px;background:transparent;display:block;margin:0 auto"/></div>
+        <div style="text-align:center"><label class="label" style="margin-bottom:6px;display:block">TEXTO</label><input type="color" id="colorText" value="${colors.text}" onchange="previewColor('text',this.value)" style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);cursor:pointer;padding:3px;background:transparent;display:block;margin:0 auto"/></div>
+      </div>
+      <div style="display:flex;gap:8px"><button class="gold-btn" style="flex:1;font-size:12px;padding:10px" onclick="applyColors()">✓ Aplicar</button><button class="ghost-btn" style="font-size:12px;padding:10px" onclick="resetColors()">↺ Resetear</button></div>
+    </div>
+
+    <!-- PROFESIONALES -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:600;color:var(--gold)">👩‍💼 PROFESIONALES</div>
+        <div style="font-size:11px;color:var(--muted)">${pros.length}/${maxPros===99?"∞":maxPros}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">${pros.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--bg);flex-shrink:0">${p.avatar||p.name.substring(0,2).toUpperCase()}</div><div style="flex:1;display:flex;flex-direction:column;gap:5px"><input class="input-field" value="${p.name}" style="padding:7px 10px;font-size:13px" onchange="updatePro(${i},'name',this.value)" placeholder="Nombre..."/><input class="input-field" value="${p.specialty||""}" style="padding:7px 10px;font-size:12px" onchange="updatePro(${i},'specialty',this.value)" placeholder="Especialidad..."/></div><button onclick="removePro(${i})" style="background:rgba(244,67,54,0.12);border:1px solid rgba(244,67,54,0.25);border-radius:8px;color:#f44336;cursor:pointer;padding:8px 10px;font-size:13px">✕</button></div>`).join("")}</div>
+      ${pros.length<maxPros?`<button class="gold-btn" style="width:100%;font-size:13px" onclick="addPro()">+ Agregar profesional</button>`:`<div style="text-align:center;padding:12px;background:rgba(201,169,110,0.06);border:1px solid rgba(201,169,110,0.2);border-radius:10px"><div style="font-size:13px;color:var(--gold);margin-bottom:6px">Límite del plan ${PLAN_NAMES[plan]}</div><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Actualizá para agregar más</div><button class="gold-btn" style="font-size:12px;padding:8px 18px" onclick="changePlan('${plan==="basico"?"superior":"premium"}')">Actualizar plan</button></div>`}
+    </div>
+
+    <!-- WHATSAPP -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:#25D366;margin-bottom:14px">📲 WHATSAPP</div>
+      <div><label class="label">NÚMERO</label><input class="input-field" id="localWhatsapp" value="${localConfig.whatsapp||""}" placeholder="+54 9 11 1234-5678" type="tel"/></div>
+      <a href="#" onclick="testWhatsapp(event)" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:8px;font-size:12px;color:#25D366;text-decoration:none">📲 Probar</a>
+    </div>
+
+    <!-- MERCADO PAGO -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#009ee3,#00b8f1);display:flex;align-items:center;justify-content:center;font-size:14px">💳</div><div style="font-size:13px;font-weight:600;color:#009ee3">MERCADO PAGO</div></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div><label class="label">EMAIL DE MP</label><input class="input-field" id="localMpEmail" value="${localConfig.mpEmail||""}" placeholder="tu@email.com"/></div>
+        <div><label class="label">PUBLIC KEY</label><input class="input-field" id="localMpKey" value="${localConfig.mpPublicKey||""}" placeholder="APP_USR-xxx..."/></div>
+      </div>
+      <div style="margin-top:10px;padding:10px 12px;background:rgba(0,158,227,0.06);border:1px solid rgba(0,158,227,0.2);border-radius:10px;font-size:11px;color:var(--muted)">📌 Obtené tu Public Key en <strong style="color:#009ee3">mercadopago.com/developers</strong></div>
+    </div>
+
+    <button class="gold-btn" style="width:100%;margin-bottom:8px" onclick="saveLocal()">💾 Guardar todo</button>
+    <div id="localSaveMsg" style="text-align:center;font-size:12px;color:#4CAF50;min-height:18px"></div>
+  `;
+}
+
+function changePlan(p){localConfig.plan=p;showToast("Plan: "+PLAN_NAMES[p],"info");renderLocal();}
+function addPro(){if((localConfig.profesionales||[]).length>=PLAN_LIMITS[localConfig.plan||"basico"]){showToast("Límite del plan alcanzado","error");return;}localConfig.profesionales=localConfig.profesionales||[];localConfig.profesionales.push({id:Date.now(),name:"Nueva profesional",specialty:"",avatar:"NP"});renderLocal();}
+function removePro(i){if((localConfig.profesionales||[]).length<=1){showToast("Debe haber al menos 1 profesional","error");return;}localConfig.profesionales.splice(i,1);renderLocal();}
+function updatePro(i,field,val){if(!localConfig.profesionales[i])return;localConfig.profesionales[i][field]=val;if(field==="name")localConfig.profesionales[i].avatar=val.split(" ").map(n=>n[0]||"").join("").substring(0,2).toUpperCase();}
+function toggleDia(i){localConfig.diasAtencion=localConfig.diasAtencion||[1,2,3,4,5,6];const idx=localConfig.diasAtencion.indexOf(i);if(idx>=0)localConfig.diasAtencion.splice(idx,1);else localConfig.diasAtencion.push(i);const btn=document.getElementById("dia-"+i);if(btn){const active=localConfig.diasAtencion.includes(i);btn.style.borderColor=active?"var(--gold)":"rgba(255,255,255,0.1)";btn.style.background=active?"rgba(201,169,110,0.12)":"transparent";btn.style.color=active?"var(--gold)":"var(--muted)";}}
+function previewColor(type,val){localConfig.colors=localConfig.colors||{};localConfig.colors[type]=val;if(type==="gold")document.documentElement.style.setProperty("--gold",val);if(type==="bg"){document.body.style.background=val;document.documentElement.style.setProperty("--bg",val);}if(type==="text"){document.documentElement.style.setProperty("--text",val);document.body.style.color=val;}}
+function applyColors(){const c=localConfig.colors||{};if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);if(c.bg){document.body.style.background=c.bg;document.documentElement.style.setProperty("--bg",c.bg);}if(c.text){document.documentElement.style.setProperty("--text",c.text);document.body.style.color=c.text;}localStorage.setItem("studioConfig",JSON.stringify(localConfig));showToast("Colores aplicados!","success");}
+function resetColors(){localConfig.colors={gold:"#C9A96E",bg:"#0e0c0a",text:"#f0ece4"};document.documentElement.style.setProperty("--gold","#C9A96E");document.documentElement.style.setProperty("--bg","#0e0c0a");document.documentElement.style.setProperty("--text","#f0ece4");document.body.style.background="#0e0c0a";document.body.style.color="#f0ece4";const cg=document.getElementById("colorGold"),cb=document.getElementById("colorBg"),ct=document.getElementById("colorText");if(cg)cg.value="#C9A96E";if(cb)cb.value="#0e0c0a";if(ct)ct.value="#f0ece4";showToast("Colores reseteados","info");}
+function applyTemplate(gold,bg,text){localConfig.colors={gold,bg,text};document.documentElement.style.setProperty("--gold",gold);document.documentElement.style.setProperty("--bg",bg);document.documentElement.style.setProperty("--text",text);document.body.style.background=bg;document.body.style.color=text;localStorage.setItem("studioConfig",JSON.stringify(localConfig));showToast("Template aplicado! ✨","success");}
+function handleLogoUpload(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{localConfig.logoUrl=e.target.result;localStorage.setItem("studioConfig",JSON.stringify(localConfig));updateLogoUI();showToast("Logo cargado!","success");renderLocal();};reader.readAsDataURL(file);}
+function testWhatsapp(e){e.preventDefault();const num=(document.getElementById("localWhatsapp")?.value||localConfig.whatsapp||"").replace(/[^0-9]/g,"");if(!num){showToast("Ingresá un número primero","error");return;}window.open("https://wa.me/"+num+"?text="+encodeURIComponent("Hola! Te escribo desde Euge Díaz Studio 🌿"),"_blank");}
+async function saveLocal(){
+  localConfig.nombre=document.getElementById("localNombre")?.value||localConfig.nombre;
+  localConfig.direccion=document.getElementById("localDireccion")?.value||"";
+  localConfig.instagram=document.getElementById("localInstagram")?.value||"";
+  localConfig.whatsapp=document.getElementById("localWhatsapp")?.value||"";
+  localConfig.mpEmail=document.getElementById("localMpEmail")?.value||"";
+  localConfig.mpPublicKey=document.getElementById("localMpKey")?.value||"";
+  localConfig.horarioDesde=document.getElementById("horarioDesde")?.value||"09:00";
+  localConfig.horarioHasta=document.getElementById("horarioHasta")?.value||"19:00";
+  localStorage.setItem("studioConfig",JSON.stringify(localConfig));
+  updateLogoUI();
+  if(user&&user.uid&&typeof firebase!=="undefined"){
+    try{
+      const {logoUrl,...data}=localConfig;
+      await firebase.firestore().collection("studios").doc(user.uid).set({...data,updatedAt:new Date()});
+      showToast("Configuración guardada!","success");
+    }catch(e){showToast("Guardado localmente ✓","info");}
+  } else {showToast("Configuración guardada!","success");}
+  const msg=document.getElementById("localSaveMsg");if(msg){msg.textContent="✓ Guardado";setTimeout(()=>msg.textContent="",3000);}
+}
+
+// ═══════════════════════ INIT ═══════════════════════
+try{
+  const saved=localStorage.getItem("studioConfig");
+  if(saved){
+    localConfig={...localConfig,...JSON.parse(saved)};
+    setTimeout(()=>{
+      updateLogoUI();
+      const c=localConfig.colors||{};
+      if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);
+      if(c.bg){document.body.style.background=c.bg;document.documentElement.style.setProperty("--bg",c.bg);}
+      if(c.text){document.documentElement.style.setProperty("--text",c.text);document.body.style.color=c.text;}
+    },100);
+  }
+}catch(e){}
+
+const savedLang=localStorage.getItem("genda_lang")||"es";
+if(savedLang!=="es")setLang(savedLang);
+
+renderHome();
+</script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={
+  apiKey:"AIzaSyADVeIhOgMysN_GIdlT13R14Aq7yLOlYQ0",
+  authDomain:"genda-6b5ca.firebaseapp.com",
+  projectId:"genda-6b5ca",
+  storageBucket:"genda-6b5ca.firebasestorage.app",
+  messagingSenderId:"805302831088",
+  appId:"1:805302831088:web:ac45a086c7299df1dfbf35"
+};
+firebase.initializeApp(firebaseConfig);
+
+firebase.auth().getRedirectResult().then(async r=>{if(r&&r.user)await processUser(r.user);}).catch(e=>console.log("redirect:",e.code));
+firebase.auth().onAuthStateChanged(async u=>{
+  if(u){
+    const isAdmin=ADMIN_EMAILS.includes(u.email);
+    const initials=u.displayName.split(" ").map(n=>n[0]||"").join("").substring(0,2).toUpperCase();
+    let stars=0;
+    try{
+      const db=firebase.firestore();
+      const snap=await db.collection("users").doc(u.uid).get();
+      if(!snap.exists)await db.collection("users").doc(u.uid).set({name:u.displayName,email:u.email,stars:0,isAdmin,createdAt:new Date()});
+      stars=snap.exists?snap.data().stars||0:0;
+      const appts=await db.collection("appointments").where("uid","==",u.uid).get();
+      myAppointments=appts.docs.map(d=>({id:d.id,...d.data()}));
+      const studioSnap=await db.collection("studios").doc(u.uid).get();
+      if(studioSnap.exists){localConfig={...localConfig,...studioSnap.data()};updateLogoUI();}
+    }catch(e){console.log(e);}
+    user={name:u.displayName,email:u.email,avatar:initials,stars,isAdmin,uid:u.uid};
+    clientName=user.name;
+    renderNavRight();
+    renderCurrentView();
+  }
+});
+</script>
+</body>
+</html>
